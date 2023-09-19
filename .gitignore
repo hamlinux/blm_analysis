@@ -21,7 +21,7 @@
 *.txt
 
 # ignore data folder/symbolic link/sensitive file
-data
+data/*
 secure_data
 ext_data
 tmp
