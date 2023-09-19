@@ -25,7 +25,8 @@ sort(unique(blm.df$admin_st))
 ```{r}
 blm.df %>% 
   group_by(admin_st) %>% 
-  summarise(count = n())
+  summarise(count = n()) %>% 
+  arrange(desc(count))
 ```
 
 ```{r}
@@ -53,3 +54,35 @@ total_horse_state %>%
   geom_col()+
   labs(title = "Total Estimated Horses per State", x = "State", y = "Total Estimated Horses")
 ```
+### Average Horses per Mile per State
+```{r}
+ahpm <- blm.df %>% 
+  group_by(admin_st) %>% 
+  summarise(average_horse_per_mile = round(mean(est_horse_pop / total_sq_miles),2)) %>%
+  arrange(desc(average_horse_per_mile)) %>% 
+  print()
+```
+```{r}
+ahpm %>% 
+  ggplot(aes(x = reorder(admin_st, -average_horse_per_mile), average_horse_per_mile))+
+  geom_col()+
+  labs(title = "Average Horses per Mile by State", x = "State", y = "Average Horses per Mile")
+```
+
+```{r}
+amph <- blm.df %>%
+  drop_na(est_horse_pop) %>% 
+  filter(est_horse_pop > 0) %>% 
+  mutate(mile_per_horse = total_sq_miles / est_horse_pop) %>% 
+  group_by(admin_st) %>% 
+  summarise(average_mile_per_horse = round(mean(mile_per_horse),2)) %>%
+  arrange(desc(average_mile_per_horse)) %>% 
+  print()
+```
+```{r}
+amph %>% 
+  ggplot(aes(x = reorder(admin_st, -average_mile_per_horse), average_mile_per_horse))+
+  geom_col()+
+  labs(title = "Average Miles per Horse by State", x = "State", y = NULL)
+```
+
