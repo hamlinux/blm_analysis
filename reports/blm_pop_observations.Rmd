@@ -1,0 +1,55 @@
+---
+title: "BLM Horse Population and HMA Size Analysis"
+output: html_notebook
+---
+
+### National Totals
+
+```{r}
+blm.df %>%
+ select(est_horse_pop, total_sq_miles, admin_st) %>% 
+ summarise(total_sq_mile =  round(sum(total_sq_miles)),
+           total_horse_pop = sum(est_horse_pop),
+           average_horse_per_mile = round(mean(total_horse_pop / total_sq_mile)),
+           average_mile_per_horse = round(mean(total_sq_mile / total_horse_pop)))
+```
+
+### States involved in the Program
+
+```{r}
+sort(unique(blm.df$admin_st))
+```
+
+## HMAs per State
+
+```{r}
+blm.df %>% 
+  group_by(admin_st) %>% 
+  summarise(count = n())
+```
+
+```{r}
+blm.df %>% 
+  group_by(admin_st) %>% 
+  summarise(count = n()) %>% 
+  ggplot(aes(x= reorder(admin_st, -count), y= count))+
+  geom_col()+
+  labs(title = "HMAs per State", x = "State", y = "Number of HMAs")
+```
+
+### Horse Total by State
+
+```{r}
+total_horse_state <- blm.df %>%
+  group_by(admin_st) %>% 
+  summarise(total_horses = sum(est_horse_pop)) %>% 
+  arrange(desc(total_horses)) %>%
+  print()
+```
+
+```{r}
+total_horse_state %>% 
+  ggplot(aes(x = reorder(admin_st, -total_horses), total_horses))+
+  geom_col()+
+  labs(title = "Total Estimated Horses per State", x = "State", y = "Total Estimated Horses")
+```
